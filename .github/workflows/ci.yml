@@ -34,6 +34,12 @@ jobs:
         run: mvn clean package -DskipTests
       
       - name: Run unit tests with H2
+        env:
+          SPRING_DATASOURCE_URL: jdbc:h2:mem:testdb
+          SPRING_DATASOURCE_DRIVERCLASSNAME: org.h2.Driver
+          SPRING_DATASOURCE_USERNAME: sa
+          SPRING_DATASOURCE_PASSWORD: ""
+          SPRING_JPA_DATABASE_PLATFORM: org.hibernate.dialect.H2Dialect
         run: mvn test
       
       - name: Upload test results
