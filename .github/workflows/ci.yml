@@ -1,0 +1,61 @@
+name: CI - Build & Test
+
+on:
+  pull_request:
+    branches:
+      - main
+      - develop
+  push:
+    branches:
+      - main
+      - develop
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    
+    container:
+      image: maven:3.9-eclipse-temurin-17
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Cache Maven packages
+        uses: actions/cache@v3
+        with:
+          path: ~/.m2
+          key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
+          restore-keys: |
+            ${{ runner.os }}-m2
+      
+      - name: Build with Maven
+        run: mvn clean package -DskipTests
+      
+      - name: Run tests
+        run: mvn test
+      
+      - name: Generate test report
+        if: always()
+        uses: EnricoMi/publish-unit-test-result-action@v2
+        with:
+          files: target/surefire-reports/*.xml
+          check_name: Test Results
+
+  docker-build:
+    runs-on: ubuntu-latest
+    if: success()
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+      
+      - name: Build Docker image
+        uses: docker/build-push-action@v4
+        with:
+          context: .
+          push: false
+          tags: employee-management:${{ github.sha }}
