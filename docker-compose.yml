@@ -33,6 +33,17 @@ services:
         condition: service_healthy
     volumes:
       - .:/app
-
+  flyway:
+    image: flyway/flyway:10
+    depends_on:
+      postgres:
+        condition: service_healthy
+    command:
+      - migrate
+      - -url=jdbc:postgresql://postgres:5432/employee_db
+      - -user=postgres
+      - -password=postgres
+    volumes:
+      - ./src/main/resources/db/migration:/flyway/sql
 volumes:
   postgres_data:
