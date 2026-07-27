@@ -9,21 +9,20 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout Code
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-      - name: Validate Compose File
+      - name: Validate Compose
         run: docker compose config
 
       - name: Start Containers
         run: docker compose up --build -d
 
-      - name: Verify Running Containers
+      - name: List Containers
         run: docker ps
 
       - name: View Logs
         run: docker compose logs
 
-      - name: Shutdown Containers
+      - name: Stop Containers
         if: always()
         run: docker compose down
