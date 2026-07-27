@@ -18,12 +18,12 @@ jobs:
       - name: Start Containers
         run: docker compose up --build -d
 
-      - name: Show Containers
+      - name: Verify Running Containers
         run: docker ps
 
-      - name: Show Logs
+      - name: View Logs
         run: docker compose logs
 
-      - name: Stop Containers
+      - name: Shutdown Containers
         if: always()
         run: docker compose down
